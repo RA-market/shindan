@@ -1,0 +1,446 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>エンジニア転職診断｜今の学習でどこまで届く？</title>
+<style>
+  :root {
+    --bg: #f6f4ef; --card: #ffffff; --ink: #1f2430; --sub: #5b6272; --line: #e2ddd2;
+    --main: #1f6f5c; --main-ink: #ffffff; --soft: #e6f2ee;
+    --now: #1f6f5c; --next: #b7791f; --far: #6b7280;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+    font-family: "Hiragino Sans", "Yu Gothic UI", "Meiryo", system-ui, sans-serif;
+    line-height: 1.7; font-size: 16px; }
+  main { max-width: 560px; margin: 0 auto; padding: 20px 16px 56px; }
+  h1 { font-size: 24px; line-height: 1.4; margin: 12px 0 8px; }
+  h2 { font-size: 19px; line-height: 1.5; margin: 0 0 12px; }
+  h3 { font-size: 16px; margin: 0 0 6px; }
+  p { margin: 0 0 12px; }
+  .sub { color: var(--sub); font-size: 14px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 18px 16px; margin: 14px 0; }
+  .btn { display: block; width: 100%; border: 0; border-radius: 12px; padding: 15px 16px; font-size: 17px; font-weight: 700;
+    background: var(--main); color: var(--main-ink); cursor: pointer; text-align: center; text-decoration: none; font-family: inherit; }
+  .btn:disabled { opacity: .4; cursor: default; }
+  .btn.ghost { background: transparent; color: var(--main); border: 2px solid var(--main); }
+  .btn.small { font-size: 15px; padding: 11px 14px; }
+  .row { display: flex; gap: 10px; margin-top: 14px; }
+  .row .btn { flex: 1; }
+  .opts { display: grid; gap: 9px; margin: 12px 0 4px; }
+  .opt { display: flex; align-items: center; gap: 10px; border: 2px solid var(--line); border-radius: 12px; padding: 12px 13px;
+    background: #fff; cursor: pointer; font-size: 16px; }
+  .opt input { width: 20px; height: 20px; accent-color: var(--main); flex: none; margin: 0; }
+  .opt:has(input:checked) { border-color: var(--main); background: var(--soft); }
+  .opt:focus-within { outline: 3px solid #9cc9bd; outline-offset: 1px; }
+  .bar { height: 6px; background: var(--line); border-radius: 99px; overflow: hidden; margin: 6px 0 2px; }
+  .bar i { display: block; height: 100%; background: var(--main); width: 0; transition: width .2s; }
+  .step { font-size: 13px; color: var(--sub); }
+  .tier { border-left: 6px solid var(--far); padding: 2px 0 2px 12px; margin: 16px 0; }
+  .tier.now { border-color: var(--now); } .tier.next { border-color: var(--next); }
+  .tier h3 { font-size: 17px; }
+  .job { margin: 10px 0 0; padding: 10px 12px; background: var(--bg); border-radius: 10px; }
+  .job b { display: block; }
+  .job span { display: block; font-size: 14px; color: var(--sub); }
+  .job ul { margin: 4px 0 0; padding-left: 20px; font-size: 14px; }
+  .none { font-size: 14px; color: var(--sub); margin: 6px 0 0; }
+  .note { font-size: 13px; color: var(--sub); border-top: 1px solid var(--line); padding-top: 12px; margin-top: 18px; }
+  .note li { margin-bottom: 4px; }
+  .note ul { padding-left: 18px; margin: 6px 0 0; }
+  textarea { width: 100%; min-height: 150px; border: 1px solid var(--line); border-radius: 10px; padding: 10px; font-size: 14px;
+    font-family: inherit; line-height: 1.6; color: var(--ink); background: #fff; }
+  [hidden] { display: none !important; }
+  .msg { font-size: 14px; color: var(--main); min-height: 1.6em; margin: 6px 0 0; }
+</style>
+</head>
+<body>
+<main>
+
+  <!-- 最初の画面 -->
+  <section id="intro">
+    <p class="sub">エンジニア転職診断</p>
+    <h1>今の学習で、どの仕事に届きそう？</h1>
+    <p>8つの質問に答えると、今の学習の内容から「届きそうな仕事」と「あと1つ足せば届きそうな仕事」を返します。3分ほどで終わります。</p>
+    <div class="card">
+      <h3>この診断で分かること</h3>
+      <p class="sub" style="margin:0">・今の学習で届きそうな仕事の種類<br>・あと1つ、何を足せば届きそうか<br>・まだ遠い仕事と、その理由</p>
+    </div>
+    <button class="btn" id="startBtn" type="button">診断を始める</button>
+    <div class="note">
+      <ul>
+        <li>名前・連絡先・会社名は聞きません。答えた内容はこの画面の中だけで計算し、どこにも送りません。</li>
+        <li>結果は、公開されている求人票によく書かれている条件をもとにした目安です。採用や内定を約束するものではありません。</li>
+        <li>年収や点数の査定は行いません。</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 質問 -->
+  <section id="quiz" hidden>
+    <p class="step" id="stepText"></p>
+    <div class="bar"><i id="barFill"></i></div>
+    <div class="card">
+      <h2 id="qTitle" tabindex="-1"></h2>
+      <p class="sub" id="qHelp"></p>
+      <div class="opts" id="qOpts" role="group" aria-labelledby="qTitle"></div>
+    </div>
+    <div class="row">
+      <button class="btn ghost" id="backBtn" type="button">もどる</button>
+      <button class="btn" id="nextBtn" type="button" disabled>次へ</button>
+    </div>
+  </section>
+
+  <!-- 結果 -->
+  <section id="result" hidden>
+    <p class="sub">診断の結果</p>
+    <h1 id="resultHead" tabindex="-1"></h1>
+    <p id="resultLead"></p>
+
+    <div class="card">
+      <div class="tier now"><h3>今の学習で届きそうな仕事</h3><div id="tierNow"></div></div>
+      <div class="tier next"><h3>あと1つ足せば届きそうな仕事</h3><div id="tierNext"></div></div>
+      <div class="tier far"><h3>まだ遠い仕事</h3><div id="tierFar"></div></div>
+    </div>
+
+    <div class="card">
+      <h2>次の一歩</h2>
+      <p id="nextStep"></p>
+    </div>
+
+    <div class="card">
+      <h2>くわしく見てほしい人へ</h2>
+      <p>結果を LINE のトークに送ってもらえれば、人が見て「次に何を足すとよいか」を返します。15分だけ話して相談することもできます。送らなくても、この結果はそのまま使えます。</p>
+      <textarea id="resultText" readonly aria-label="LINE に送る結果の文"></textarea>
+      <div class="row">
+        <button class="btn small" id="copyBtn" type="button">結果をコピーする</button>
+        <a class="btn small ghost" id="lineBtn" href="#" hidden>LINE で送る</a>
+      </div>
+      <p class="msg" id="copyMsg" role="status"></p>
+      <p class="sub" style="margin:0">会社名・顧客名・連絡先は書き足さないでください。</p>
+    </div>
+
+    <button class="btn ghost" id="retryBtn" type="button">もう一度やる</button>
+
+    <div class="note">
+      <ul>
+        <li>この結果は、公開されている求人票によく書かれている条件をもとにした目安です。採用や内定を約束するものではありません。実際の条件は求人ごとに違います。</li>
+        <li>答えた内容は、この画面の中だけで計算しています。「LINE で送る」「コピーする」を自分で押さない限り、どこにも送られません。</li>
+      </ul>
+    </div>
+  </section>
+
+</main>
+
+<script>
+/* ===== 設定 =====
+   LINE_BASIC_ID: 公式アカウントのベーシックID（例 "@abc1234x"）。入れると「LINE で送る」ボタンが出る。空ならコピーだけ。 */
+const LINE_BASIC_ID = "@393jxxwx";
+
+/* ===== 質問 ===== */
+const QUESTIONS = [
+  { id: "work", title: "今の仕事にいちばん近いものは？", multi: false, opts: [
+    ["none", "IT 以外の仕事をしている・学生・離職中"],
+    ["help", "ヘルプデスク・IT サポート・キッティング"],
+    ["test", "テスター・QA"],
+    ["ops", "運用・保守・監視"],
+    ["dev", "開発に少し関わっている"],
+  ]},
+  { id: "tech", title: "学習しているものは？", help: "当てはまるものをすべて選んでください。", multi: true, opts: [
+    ["html", "HTML / CSS"],
+    ["js", "JavaScript"],
+    ["fw", "TypeScript・React・Vue などのフレームワーク"],
+    ["python", "Python"],
+    ["server", "Java・PHP・Ruby・Go・C# のどれか"],
+    ["sql", "SQL・データベース"],
+    ["linux", "Linux・ネットワークの基礎"],
+    ["cloud", "AWS・Azure などのクラウド"],
+    ["git", "Git・GitHub"],
+    ["nothing", "まだ始めていない"],
+  ]},
+  { id: "months", title: "学習を始めてどのくらい？", multi: false, opts: [
+    ["0", "まだ・1か月未満"],
+    ["1", "1〜3か月"],
+    ["3", "3〜6か月"],
+    ["6", "6か月〜1年"],
+    ["12", "1年以上"],
+  ]},
+  { id: "hours", title: "週にどのくらい学習している？", multi: false, opts: [
+    ["1", "週3時間未満"],
+    ["3", "週3〜7時間"],
+    ["7", "週7〜15時間"],
+    ["15", "週15時間以上"],
+  ]},
+  { id: "made", title: "自分で作ったものは？", help: "いちばん近いものを1つ選んでください。", multi: false, opts: [
+    ["0", "まだない"],
+    ["1", "教材のとおりに作ったものがある"],
+    ["2", "自分で考えたものを作った（公開はしていない）"],
+    ["3", "自分で考えたものを GitHub や URL で公開している"],
+    ["4", "公開していて、自分以外の人が使っている"],
+  ]},
+  { id: "cert", title: "持っている資格は？", help: "当てはまるものをすべて選んでください。", multi: true, opts: [
+    ["ip", "IT パスポート"],
+    ["fe", "基本情報技術者・応用情報技術者"],
+    ["ccna", "CCNA"],
+    ["lpic", "LPIC・LinuC"],
+    ["aws", "AWS・Azure の認定資格"],
+    ["nothing", "まだない"],
+  ]},
+  { id: "ai", title: "生成 AI（ChatGPT など）の使い方は？", help: "いちばん近いものを1つ選んでください。", multi: false, opts: [
+    ["0", "ほとんど使っていない"],
+    ["1", "調べものや質問に使っている"],
+    ["2", "コードを書いてもらっている"],
+    ["3", "書いてもらったコードを自分で説明でき、直せる"],
+  ]},
+  { id: "goal", title: "目指したい仕事は？", multi: false, opts: [
+    ["web", "Web の開発（画面やサーバー側を作る）"],
+    ["infra", "インフラ・クラウド（サーバーやネットワーク）"],
+    ["inhouse", "社内 SE（会社の中の IT 全般）"],
+    ["data", "データ・AI を扱う仕事"],
+    ["any", "まだ決めていない"],
+  ]},
+];
+
+/* ===== 仕事の種類と、求人票によく書かれている条件 =====
+   条件は「公開されている求人票の傾向」をもとにした仮の基準。RA 社内のデータは使っていない。
+   各条件: [満たしているかの関数, 足りないときに表示する「足すもの」] */
+const has = (a, k) => a.tech.includes(k);
+const cert = (a, ...ks) => ks.some(k => a.cert.includes(k));
+const lang = a => ["js", "fw", "python", "server"].some(k => has(a, k));
+const itJob = a => a.work !== "none";
+const m = a => Number(a.months), h = a => Number(a.hours), made = a => Number(a.made);
+
+const JOBS = [
+  { key: "support", goal: ["any", "inhouse", "infra"], name: "テスト・QA、ヘルプデスク・IT サポート",
+    desc: "未経験からの入口になりやすい仕事です。開発の現場の近くで、仕組みを覚えられます。",
+    req: [
+      [a => a.tech.length > 0 && !has(a, "nothing"), "何か1つ、学習を始める（HTML/CSS や Linux の基礎など）"],
+      [a => m(a) >= 1 || itJob(a), "学習を1か月以上続ける"],
+    ]},
+  { key: "ops", goal: ["any", "infra", "inhouse"], name: "運用・保守・監視（インフラの入口）",
+    desc: "サーバーやネットワークを見守る仕事です。インフラの構築に進む人の最初の一歩になりやすいです。",
+    req: [
+      [a => has(a, "linux"), "Linux・ネットワークの基礎を学ぶ"],
+      [a => cert(a, "ip", "fe", "ccna", "lpic", "aws") || m(a) >= 3, "資格を1つ取る（CCNA・LinuC・IT パスポートなど）"],
+    ]},
+  { key: "infra", goal: ["infra"], name: "インフラ構築・クラウドエンジニア",
+    desc: "サーバーやクラウドの環境を作る仕事です。",
+    req: [
+      [a => has(a, "linux"), "Linux・ネットワークの基礎を学ぶ"],
+      [a => has(a, "cloud"), "AWS などのクラウドを実際に触る"],
+      [a => cert(a, "ccna", "lpic", "aws"), "CCNA・LinuC・AWS 認定のどれかを取る"],
+      [a => a.work === "ops" || made(a) >= 2, "自分で環境を1つ作ってみる（手順をメモに残す）"],
+    ]},
+  { key: "webdev", goal: ["web", "any"], name: "Web 開発（受託開発・SES の開発の現場）",
+    desc: "チームの中で、画面やサーバー側の機能を作る仕事です。",
+    req: [
+      [a => lang(a), "プログラミング言語を1つ決めて学ぶ"],
+      [a => has(a, "sql"), "SQL・データベースの基礎を学ぶ"],
+      [a => has(a, "git"), "Git・GitHub を使えるようにする"],
+      [a => made(a) >= 2, "教材の写しではなく、自分で考えたものを1つ作る"],
+      [a => m(a) >= 3, "学習を3か月以上続ける"],
+    ]},
+  { key: "product", goal: ["web"], name: "自社サービスの Web 開発",
+    desc: "自分の会社のサービスを作り続ける仕事です。未経験からの募集は少なく、作ったものをよく見られます。",
+    req: [
+      [a => lang(a) && has(a, "sql") && has(a, "git"), "言語・SQL・Git をひととおり学ぶ"],
+      [a => has(a, "fw"), "フレームワーク（React など）で作ってみる"],
+      [a => made(a) >= 3, "作ったものを GitHub や URL で公開する"],
+      [a => m(a) >= 6, "学習を6か月以上続ける"],
+      [a => Number(a.ai) !== 2, "AI に書いてもらったコードを、自分で説明して直せるようにする"],
+    ]},
+  { key: "inhouse", goal: ["inhouse"], name: "社内 SE（会社の中の IT 担当）",
+    desc: "社内のパソコン・システム・問い合わせを幅広く見る仕事です。IT の現場の経験を見られることが多いです。",
+    req: [
+      [a => itJob(a), "IT の現場の経験を積む（ヘルプデスクや運用から入る人が多い）"],
+      [a => has(a, "sql") || has(a, "linux"), "SQL か Linux・ネットワークの基礎を学ぶ"],
+      [a => cert(a, "ip", "fe"), "IT パスポートか基本情報技術者を取る"],
+    ]},
+  { key: "data", goal: ["data"], name: "データ分析・AI を扱う仕事",
+    desc: "データを集めて分析したり、AI を仕事に組み込んだりする仕事です。未経験からの募集は少なめです。",
+    req: [
+      [a => has(a, "python"), "Python を学ぶ"],
+      [a => has(a, "sql"), "SQL・データベースの基礎を学ぶ"],
+      [a => made(a) >= 3, "自分でデータを分析したものを公開する"],
+      [a => m(a) >= 6, "学習を6か月以上続ける"],
+    ]},
+];
+
+/* ===== 画面の動き ===== */
+const $ = id => document.getElementById(id);
+const answers = {};
+let step = 0;
+
+function show(id) {
+  ["intro", "quiz", "result"].forEach(s => $(s).hidden = s !== id);
+  window.scrollTo(0, 0);
+}
+
+function renderQuestion() {
+  const q = QUESTIONS[step];
+  $("stepText").textContent = `質問 ${step + 1} / ${QUESTIONS.length}`;
+  $("barFill").style.width = `${(step / QUESTIONS.length) * 100}%`;
+  $("qTitle").textContent = q.title;
+  $("qHelp").textContent = q.help || "";
+  $("qHelp").hidden = !q.help;
+  const box = $("qOpts");
+  box.innerHTML = "";
+  const cur = answers[q.id];
+  q.opts.forEach(([val, label]) => {
+    const l = document.createElement("label");
+    l.className = "opt";
+    const i = document.createElement("input");
+    i.type = q.multi ? "checkbox" : "radio";
+    i.name = q.id; i.value = val;
+    i.checked = q.multi ? (cur || []).includes(val) : cur === val;
+    i.addEventListener("change", () => onChange(q, i));
+    l.append(i, document.createTextNode(label));
+    box.append(l);
+  });
+  $("backBtn").textContent = step === 0 ? "最初にもどる" : "もどる";
+  $("nextBtn").textContent = step === QUESTIONS.length - 1 ? "結果を見る" : "次へ";
+  updateNext();
+  $("qTitle").focus({ preventScroll: true });
+}
+
+function onChange(q, input) {
+  if (q.multi) {
+    const boxes = [...document.querySelectorAll(`input[name="${q.id}"]`)];
+    // 「まだ〜ない」は他の選択肢と同時に選べない
+    if (input.value === "nothing" && input.checked) boxes.forEach(b => { if (b !== input) b.checked = false; });
+    if (input.value !== "nothing" && input.checked) boxes.forEach(b => { if (b.value === "nothing") b.checked = false; });
+    answers[q.id] = boxes.filter(b => b.checked).map(b => b.value);
+  } else {
+    answers[q.id] = input.value;
+  }
+  updateNext();
+}
+
+function updateNext() {
+  const q = QUESTIONS[step], v = answers[q.id];
+  $("nextBtn").disabled = q.multi ? !(v && v.length) : !v;
+}
+
+function judge(a) {
+  const now = [], next = [], far = [];
+  JOBS.forEach(job => {
+    const missing = job.req.filter(([ok]) => !ok(a)).map(([, add]) => add);
+    const item = { ...job, missing };
+    if (missing.length === 0) now.push(item);
+    else if (missing.length === 1) next.push(item);
+    else far.push(item);
+  });
+  // 目指したい仕事に近いものを上に
+  const rank = j => (j.goal.includes(a.goal) ? 0 : 1);
+  [now, next, far].forEach(list => list.sort((x, y) => rank(x) - rank(y) || x.missing.length - y.missing.length));
+  return { now, next, far };
+}
+
+function jobHtml(job, mode) {
+  const d = document.createElement("div");
+  d.className = "job";
+  const b = document.createElement("b"); b.textContent = job.name; d.append(b);
+  const s = document.createElement("span"); s.textContent = job.desc; d.append(s);
+  if (mode !== "now" && job.missing.length) {
+    const s2 = document.createElement("span");
+    s2.textContent = mode === "next" ? "足すもの：" : "まだ足りていないもの：";
+    s2.style.marginTop = "4px"; s2.style.color = "var(--ink)";
+    d.append(s2);
+    const ul = document.createElement("ul");
+    job.missing.forEach(t => { const li = document.createElement("li"); li.textContent = t; ul.append(li); });
+    d.append(ul);
+  }
+  return d;
+}
+
+function fill(id, list, mode, emptyText) {
+  const box = $(id); box.innerHTML = "";
+  if (!list.length) { const p = document.createElement("p"); p.className = "none"; p.textContent = emptyText; box.append(p); return; }
+  list.forEach(j => box.append(jobHtml(j, mode)));
+}
+
+function label(qid) {
+  const q = QUESTIONS.find(x => x.id === qid), v = answers[qid];
+  const find = k => q.opts.find(o => o[0] === k)[1];
+  return q.multi ? v.map(find).join("、") : find(v);
+}
+
+function showResult() {
+  const a = answers, r = judge(a);
+  const goalJob = [...r.now, ...r.next, ...r.far].find(j => j.goal[0] === a.goal);
+
+  let head, lead;
+  if (r.now.length) {
+    head = `今の学習で届きそうな仕事が ${r.now.length} つあります`;
+    lead = "求人票によく書かれている条件と比べて、足りているものが多い仕事です。";
+  } else if (r.next.length) {
+    head = "あと1つ足せば、届きそうな仕事があります";
+    lead = "今のままでは少し足りませんが、足すものははっきりしています。";
+  } else {
+    head = "まずは、最初の1つを始めるところからです";
+    lead = "今の段階では、どの仕事も条件が2つ以上足りていません。足すものを1つずつ見ていきましょう。";
+  }
+  $("resultHead").textContent = head;
+  $("resultLead").textContent = lead;
+
+  fill("tierNow", r.now, "now", "今の段階では、まだありません。");
+  fill("tierNext", r.next, "next", "今の段階では、ありません。");
+  fill("tierFar", r.far.slice(0, 4), "far", "ありません。");
+
+  // 次の一歩：目指す仕事に足りないものの1つ目。なければ、いちばん近い仕事の1つ目
+  let stepText;
+  const target = (goalJob && goalJob.missing.length) ? goalJob : (r.next[0] || r.far[0]);
+  if (goalJob && goalJob.missing.length === 0) {
+    stepText = `目指している「${goalJob.name}」は、求人票によく書かれている条件を今の学習で満たしています。次は、実際の求人票を3つ開いて、書かれている条件と自分の学習を見比べてみてください。`;
+  } else if (target) {
+    stepText = `「${target.name}」に近づくために、まずこれを1つ：${target.missing[0]}`;
+    if (Number(a.hours) <= 1) stepText += "。週の学習時間が3時間未満なので、時間を決めて確保するところから始めると進みやすいです。";
+  } else {
+    stepText = "実際の求人票を3つ開いて、書かれている条件と自分の学習を見比べてみてください。";
+  }
+  $("nextStep").textContent = stepText;
+
+  const names = l => l.length ? l.map(j => j.name).join(" / ") : "なし";
+  $("resultText").value =
+`【エンジニア転職診断の結果】
+今の仕事：${label("work")}
+学習しているもの：${label("tech")}
+学習の期間：${label("months")}（${label("hours")}）
+作ったもの：${label("made")}
+資格：${label("cert")}
+生成AI：${label("ai")}
+目指したい仕事：${label("goal")}
+
+届きそう：${names(r.now)}
+あと1つ：${names(r.next)}
+
+くわしく見てほしいです。`;
+
+  if (LINE_BASIC_ID) {
+    $("lineBtn").hidden = false;
+    $("lineBtn").href = `https://line.me/R/oaMessage/${encodeURIComponent(LINE_BASIC_ID)}/?${encodeURIComponent($("resultText").value)}`;
+  }
+  $("copyMsg").textContent = "";
+  show("result");
+  $("resultHead").focus({ preventScroll: true });
+}
+
+$("startBtn").addEventListener("click", () => { step = 0; show("quiz"); renderQuestion(); });
+$("nextBtn").addEventListener("click", () => {
+  if (step < QUESTIONS.length - 1) { step++; renderQuestion(); window.scrollTo(0, 0); } else showResult();
+});
+$("backBtn").addEventListener("click", () => {
+  if (step === 0) show("intro"); else { step--; renderQuestion(); window.scrollTo(0, 0); }
+});
+$("retryBtn").addEventListener("click", () => { Object.keys(answers).forEach(k => delete answers[k]); show("intro"); });
+$("copyBtn").addEventListener("click", async () => {
+  const t = $("resultText");
+  try { await navigator.clipboard.writeText(t.value); }
+  catch (e) { t.select(); document.execCommand("copy"); }
+  $("copyMsg").textContent = "コピーしました。LINE のトークに貼り付けて送ってください。";
+});
+</script>
+</body>
+</html>
