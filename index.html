@@ -5,70 +5,154 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
 <title>エンジニア転職診断｜今の学習でどこまで届く？</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@500;700;900&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #f6f4ef; --card: #ffffff; --ink: #1f2430; --sub: #5b6272; --line: #e2ddd2;
-    --main: #1f6f5c; --main-ink: #ffffff; --soft: #e6f2ee;
-    --now: #1f6f5c; --next: #b7791f; --far: #6b7280;
+    --bg: #f4f1ea; --card: #ffffff; --ink: #17212b; --sub: #5a6472; --line: #e3ddd0;
+    --main: #17624f; --main-d: #0f4638; --main-ink: #ffffff; --soft: #e4f1ec; --accent: #f2b544;
+    --now: #17624f; --next: #c4831a; --far: #7b8491;
+    --shadow: 0 1px 2px rgba(23,33,43,.06), 0 8px 24px rgba(23,33,43,.07);
   }
   * { box-sizing: border-box; }
   html { -webkit-text-size-adjust: 100%; }
   body { margin: 0; background: var(--bg); color: var(--ink);
-    font-family: "Hiragino Sans", "Yu Gothic UI", "Meiryo", system-ui, sans-serif;
-    line-height: 1.7; font-size: 16px; }
-  main { max-width: 560px; margin: 0 auto; padding: 20px 16px 56px; }
-  h1 { font-size: 24px; line-height: 1.4; margin: 12px 0 8px; }
-  h2 { font-size: 19px; line-height: 1.5; margin: 0 0 12px; }
+    font-family: "Zen Kaku Gothic New", "Hiragino Sans", "Yu Gothic UI", "Meiryo", system-ui, sans-serif;
+    font-weight: 500; line-height: 1.75; font-size: 16px; }
+  main { max-width: 560px; margin: 0 auto; padding: 0 16px 64px; }
+  h1, h2, h3 { font-weight: 900; letter-spacing: .01em; text-wrap: balance; }
+  h1 { font-size: 26px; line-height: 1.4; margin: 10px 0 10px; }
+  h2 { font-size: 20px; line-height: 1.5; margin: 0 0 12px; }
   h3 { font-size: 16px; margin: 0 0 6px; }
   p { margin: 0 0 12px; }
   .sub { color: var(--sub); font-size: 14px; }
-  .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 18px 16px; margin: 14px 0; }
-  .btn { display: block; width: 100%; border: 0; border-radius: 12px; padding: 15px 16px; font-size: 17px; font-weight: 700;
-    background: var(--main); color: var(--main-ink); cursor: pointer; text-align: center; text-decoration: none; font-family: inherit; }
-  .btn:disabled { opacity: .4; cursor: default; }
-  .btn.ghost { background: transparent; color: var(--main); border: 2px solid var(--main); }
-  .btn.small { font-size: 15px; padding: 11px 14px; }
+  .card { background: var(--card); border-radius: 18px; padding: 20px 18px; margin: 16px 0; box-shadow: var(--shadow); }
+
+  /* 上の帯 */
+  .brand { display: flex; align-items: center; gap: 8px; padding: 14px 0 0; font-weight: 700; font-size: 14px; color: var(--main-d); }
+  .brand svg { width: 26px; height: 26px; flex: none; }
+
+  /* 最初の画面 */
+  .hero { margin: 12px -16px 0; padding: 26px 20px 30px; color: #fff; position: relative; overflow: hidden;
+    background: radial-gradient(120% 90% at 100% 0%, #2b8a6f 0%, var(--main) 45%, var(--main-d) 100%);
+    border-radius: 0 0 28px 28px; }
+  .hero .tag { display: inline-block; font-size: 12px; font-weight: 700; letter-spacing: .08em; padding: 4px 10px; border-radius: 99px;
+    background: rgba(255,255,255,.16); }
+  .hero h1 { font-size: 30px; line-height: 1.35; margin: 14px 0 10px; }
+  .hero h1 em { font-style: normal; background: linear-gradient(transparent 62%, rgba(242,181,68,.75) 62%); padding: 0 2px; }
+  .hero p { color: rgba(255,255,255,.9); margin: 0; font-size: 15px; }
+  .route { display: block; width: 100%; height: auto; margin: 18px 0 2px; }
+  .hero .meta { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+  .hero .meta span { font-size: 13px; font-weight: 700; padding: 5px 11px; border-radius: 99px; background: rgba(255,255,255,.14); }
+  .cta-wrap { margin-top: -24px; position: relative; padding: 0 4px; }
+  .steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
+  .steps li { display: grid; grid-template-columns: 40px 1fr; gap: 12px; align-items: start; }
+  .steps .dot { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; font-weight: 900; color: #fff; }
+  .steps b { display: block; line-height: 1.5; }
+  .steps span { font-size: 14px; color: var(--sub); line-height: 1.6; display: block; }
+
+  .btn { display: block; width: 100%; border: 0; border-radius: 14px; padding: 16px 16px; font-size: 17px; font-weight: 900;
+    background: var(--main); color: var(--main-ink); cursor: pointer; text-align: center; text-decoration: none; font-family: inherit;
+    transition: transform .08s ease, box-shadow .15s ease, opacity .15s; box-shadow: 0 6px 16px rgba(23,98,79,.28); }
+  .btn:active { transform: translateY(1px) scale(.99); }
+  .btn.big { background: var(--accent); color: #2a1e00; font-size: 18px; padding: 18px 16px; box-shadow: 0 8px 22px rgba(120,80,0,.28); }
+  .btn:disabled { opacity: .35; cursor: default; box-shadow: none; }
+  .btn.ghost { background: #fff; color: var(--main); box-shadow: inset 0 0 0 2px var(--main); }
+  .btn.small { font-size: 15px; padding: 12px 14px; }
+  .btn:focus-visible, .opt:focus-within { outline: 3px solid #f2b544; outline-offset: 2px; }
   .row { display: flex; gap: 10px; margin-top: 14px; }
   .row .btn { flex: 1; }
-  .opts { display: grid; gap: 9px; margin: 12px 0 4px; }
-  .opt { display: flex; align-items: center; gap: 10px; border: 2px solid var(--line); border-radius: 12px; padding: 12px 13px;
-    background: #fff; cursor: pointer; font-size: 16px; }
-  .opt input { width: 20px; height: 20px; accent-color: var(--main); flex: none; margin: 0; }
-  .opt:has(input:checked) { border-color: var(--main); background: var(--soft); }
-  .opt:focus-within { outline: 3px solid #9cc9bd; outline-offset: 1px; }
-  .bar { height: 6px; background: var(--line); border-radius: 99px; overflow: hidden; margin: 6px 0 2px; }
-  .bar i { display: block; height: 100%; background: var(--main); width: 0; transition: width .2s; }
-  .step { font-size: 13px; color: var(--sub); }
-  .tier { border-left: 6px solid var(--far); padding: 2px 0 2px 12px; margin: 16px 0; }
-  .tier.now { border-color: var(--now); } .tier.next { border-color: var(--next); }
-  .tier h3 { font-size: 17px; }
-  .job { margin: 10px 0 0; padding: 10px 12px; background: var(--bg); border-radius: 10px; }
-  .job b { display: block; }
-  .job span { display: block; font-size: 14px; color: var(--sub); }
-  .job ul { margin: 4px 0 0; padding-left: 20px; font-size: 14px; }
+  .row .btn.ghost { flex: 0 0 34%; }
+
+  /* 質問 */
+  .progress { position: sticky; top: 0; z-index: 2; background: var(--bg); padding: 12px 0 8px; }
+  .step { font-size: 13px; color: var(--sub); font-weight: 700; display: flex; justify-content: space-between; }
+  .bar { height: 8px; background: var(--line); border-radius: 99px; overflow: hidden; margin: 6px 0 0; }
+  .bar i { display: block; height: 100%; background: linear-gradient(90deg, var(--main), #2f9a7c); width: 0; border-radius: 99px; transition: width .3s ease; }
+  .qcard { animation: rise .25s ease both; }
+  @keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  .qnum { display: inline-block; font-size: 12px; font-weight: 900; color: var(--main); background: var(--soft); padding: 3px 10px; border-radius: 99px; margin-bottom: 8px; }
+  .opts { display: grid; gap: 10px; margin: 14px 0 2px; }
+  .opt { display: flex; align-items: center; gap: 12px; border-radius: 14px; padding: 14px 14px; background: #fff; cursor: pointer; font-size: 16px;
+    box-shadow: inset 0 0 0 1.5px var(--line); transition: box-shadow .12s, background .12s; line-height: 1.5; }
+  .opt input { appearance: none; -webkit-appearance: none; width: 22px; height: 22px; flex: none; margin: 0; border: 2px solid #b9b2a3; background: #fff;
+    border-radius: 50%; display: grid; place-items: center; transition: all .12s; }
+  .opt input[type=checkbox] { border-radius: 7px; }
+  .opt input:checked { border-color: var(--main); background: var(--main); }
+  .opt input:checked::after { content: ""; width: 10px; height: 6px; border: solid #fff; border-width: 0 0 2.5px 2.5px; transform: rotate(-45deg) translateY(-1px); }
+  .opt:has(input:checked) { box-shadow: inset 0 0 0 2px var(--main); background: var(--soft); font-weight: 700; }
+
+  /* 結果 */
+  .rhero { margin: 12px -16px 0; padding: 24px 20px 26px; color: #fff; border-radius: 0 0 28px 28px;
+    background: radial-gradient(120% 90% at 100% 0%, #2b8a6f 0%, var(--main) 45%, var(--main-d) 100%); }
+  .rhero .sub { color: rgba(255,255,255,.8); font-weight: 700; letter-spacing: .08em; font-size: 12px; }
+  .rhero h1 { font-size: 25px; margin: 8px 0 8px; }
+  .rhero p { margin: 0; color: rgba(255,255,255,.9); font-size: 15px; }
+  .count { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 16px; }
+  .count div { background: rgba(255,255,255,.13); border-radius: 14px; padding: 10px 6px 8px; text-align: center; }
+  .count b { display: block; font-size: 28px; line-height: 1.1; font-weight: 900; }
+  .count span { font-size: 12px; font-weight: 700; color: rgba(255,255,255,.88); }
+  .tier { margin: 22px 0 0; }
+  .tier > h3 { display: flex; align-items: center; gap: 8px; font-size: 17px; margin-bottom: 2px; }
+  .tier > h3::before { content: ""; width: 12px; height: 12px; border-radius: 50%; background: var(--far); flex: none; }
+  .tier.now > h3::before { background: var(--now); } .tier.next > h3::before { background: var(--next); }
+  .job { margin: 10px 0 0; padding: 14px 14px; background: #fff; border-radius: 14px; box-shadow: var(--shadow); border-left: 5px solid var(--far); }
+  .tier.now .job { border-left-color: var(--now); } .tier.next .job { border-left-color: var(--next); }
+  .job b { display: block; line-height: 1.5; }
+  .job span { display: block; font-size: 14px; color: var(--sub); line-height: 1.6; }
+  .job ul { margin: 4px 0 0; padding-left: 20px; font-size: 14px; font-weight: 700; }
+  .meter { display: flex; align-items: center; gap: 8px; margin: 8px 0 4px; }
+  .meter .segs { display: flex; gap: 4px; flex: 1; }
+  .meter .segs i { height: 8px; flex: 1; border-radius: 99px; background: var(--line); }
+  .meter .segs i.on { background: var(--far); }
+  .tier.now .meter .segs i.on { background: var(--now); } .tier.next .meter .segs i.on { background: var(--next); }
+  .meter em { font-style: normal; font-size: 12px; font-weight: 700; color: var(--sub); white-space: nowrap; }
   .none { font-size: 14px; color: var(--sub); margin: 6px 0 0; }
-  .note { font-size: 13px; color: var(--sub); border-top: 1px solid var(--line); padding-top: 12px; margin-top: 18px; }
+  .nextstep { background: #fff8e8; box-shadow: inset 0 0 0 2px #f2d08a; }
+  .nextstep h2 { display: flex; align-items: center; gap: 8px; }
+  .note { font-size: 13px; color: var(--sub); border-top: 1px solid var(--line); padding-top: 14px; margin-top: 22px; line-height: 1.7; }
   .note li { margin-bottom: 4px; }
-  .note ul { padding-left: 18px; margin: 6px 0 0; }
-  textarea { width: 100%; min-height: 150px; border: 1px solid var(--line); border-radius: 10px; padding: 10px; font-size: 14px;
-    font-family: inherit; line-height: 1.6; color: var(--ink); background: #fff; }
+  .note ul { padding-left: 18px; margin: 0; }
+  textarea { width: 100%; min-height: 150px; border: 0; box-shadow: inset 0 0 0 1.5px var(--line); border-radius: 12px; padding: 12px; font-size: 13px;
+    font-family: inherit; line-height: 1.65; color: var(--ink); background: #faf8f3; resize: vertical; }
   [hidden] { display: none !important; }
-  .msg { font-size: 14px; color: var(--main); min-height: 1.6em; margin: 6px 0 0; }
+  [tabindex="-1"]:focus { outline: none; }
+  .msg { font-size: 14px; font-weight: 700; color: var(--main); min-height: 1.6em; margin: 6px 0 0; }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
 </style>
 </head>
 <body>
 <main>
+  <div class="brand"><svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="16" fill="#17624f"/><path d="M16 6.5c-4.1 0-7.2 3.2-7.2 7.1 0 5 5.6 10.300 6.600 11.300a.9.9 0 0 0 1.200 0c1-1 6.600-6.300 6.600-11.300 0-3.900-3.100-7.100-7.200-7.100z" fill="#fff"/><path d="m12.800 13.700 2.300 2.300 4.200-4.300" fill="none" stroke="#17624f" stroke-width="2.200" stroke-linecap="round" stroke-linejoin="round"/></svg><span>エンジニアの現在地チェック</span></div>
 
   <!-- 最初の画面 -->
   <section id="intro">
-    <p class="sub">エンジニア転職診断</p>
-    <h1>今の学習で、どの仕事に届きそう？</h1>
-    <p>8つの質問に答えると、今の学習の内容から「届きそうな仕事」と「あと1つ足せば届きそうな仕事」を返します。3分ほどで終わります。</p>
-    <div class="card">
-      <h3>この診断で分かること</h3>
-      <p class="sub" style="margin:0">・今の学習で届きそうな仕事の種類<br>・あと1つ、何を足せば届きそうか<br>・まだ遠い仕事と、その理由</p>
+    <div class="hero">
+      <span class="tag">エンジニア転職診断</span>
+      <h1>今の学習で、<br><em>どの仕事</em>に届きそう？</h1>
+      <p>学んでいることを選ぶだけ。届きそうな仕事と、あと1つ足すものが分かります。</p>
+      <svg class="route" viewBox="0 0 320 96" role="img" aria-label="今いる場所から、届きそうな仕事、あと1つで届く仕事、まだ遠い仕事へ続く道の図">
+        <path d="M22 70 C 70 70, 78 30, 124 30 S 180 66, 222 60 S 276 22, 300 22" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="3" stroke-dasharray="2 9" stroke-linecap="round"/>
+        <circle cx="22" cy="70" r="9" fill="#f2b544"/><circle cx="22" cy="70" r="3.500" fill="#0f4638"/>
+        <g fill="#fff"><circle cx="124" cy="30" r="7"/><circle cx="222" cy="60" r="7" opacity=".75"/><circle cx="300" cy="22" r="7" opacity=".45"/></g>
+        <g font-size="11" font-weight="700" fill="#fff" font-family="inherit">
+          <text x="10" y="92">いま</text><text x="100" y="16">届きそう</text><text x="196" y="84">あと1つ</text><text x="262" y="46" opacity=".8">まだ遠い</text>
+        </g>
+      </svg>
+      <div class="meta"><span>8問</span><span>約3分</span><span>登録なし・無料</span></div>
     </div>
-    <button class="btn" id="startBtn" type="button">診断を始める</button>
+    <div class="cta-wrap"><button class="btn big" id="startBtn" type="button">診断を始める</button></div>
+
+    <div class="card">
+      <h2>この診断で分かること</h2>
+      <ol class="steps">
+        <li><span class="dot" style="background:var(--now)">1</span><div><b>今の学習で届きそうな仕事</b><span>求人票によく書かれている条件と比べます。</span></div></li>
+        <li><span class="dot" style="background:var(--next)">2</span><div><b>あと1つ、何を足せば届きそうか</b><span>次にやることが1つに絞れます。</span></div></li>
+        <li><span class="dot" style="background:var(--far)">3</span><div><b>まだ遠い仕事と、その理由</b><span>遠回りを減らすための目安です。</span></div></li>
+      </ol>
+    </div>
+
     <div class="note">
       <ul>
         <li>名前・連絡先・会社名は聞きません。答えた内容はこの画面の中だけで計算し、どこにも送りません。</li>
@@ -80,9 +164,12 @@
 
   <!-- 質問 -->
   <section id="quiz" hidden>
-    <p class="step" id="stepText"></p>
-    <div class="bar"><i id="barFill"></i></div>
-    <div class="card">
+    <div class="progress">
+      <p class="step"><span id="stepText"></span><span id="stepLeft"></span></p>
+      <div class="bar"><i id="barFill"></i></div>
+    </div>
+    <div class="card qcard" id="qCard">
+      <span class="qnum" id="qNum"></span>
       <h2 id="qTitle" tabindex="-1"></h2>
       <p class="sub" id="qHelp"></p>
       <div class="opts" id="qOpts" role="group" aria-labelledby="qTitle"></div>
@@ -95,24 +182,29 @@
 
   <!-- 結果 -->
   <section id="result" hidden>
-    <p class="sub">診断の結果</p>
-    <h1 id="resultHead" tabindex="-1"></h1>
-    <p id="resultLead"></p>
-
-    <div class="card">
-      <div class="tier now"><h3>今の学習で届きそうな仕事</h3><div id="tierNow"></div></div>
-      <div class="tier next"><h3>あと1つ足せば届きそうな仕事</h3><div id="tierNext"></div></div>
-      <div class="tier far"><h3>まだ遠い仕事</h3><div id="tierFar"></div></div>
+    <div class="rhero">
+      <p class="sub">診断の結果</p>
+      <h1 id="resultHead" tabindex="-1"></h1>
+      <p id="resultLead"></p>
+      <div class="count">
+        <div><b id="cNow">0</b><span>届きそう</span></div>
+        <div><b id="cNext">0</b><span>あと1つ</span></div>
+        <div><b id="cFar">0</b><span>まだ遠い</span></div>
+      </div>
     </div>
 
-    <div class="card">
+    <div class="tier now"><h3>今の学習で届きそうな仕事</h3><div id="tierNow"></div></div>
+    <div class="tier next"><h3>あと1つ足せば届きそうな仕事</h3><div id="tierNext"></div></div>
+    <div class="tier far"><h3>まだ遠い仕事</h3><div id="tierFar"></div></div>
+
+    <div class="card nextstep">
       <h2>次の一歩</h2>
-      <p id="nextStep"></p>
+      <p id="nextStep" style="margin:0"></p>
     </div>
 
     <div class="card">
       <h2>くわしく見てほしい人へ</h2>
-      <p>結果を LINE のトークに送ってもらえれば、人が見て「次に何を足すとよいか」を返します。15分だけ話して相談することもできます。送らなくても、この結果はそのまま使えます。</p>
+      <p>結果を LINE のトークに送ってもらえれば、人が見て「次に何を足すとよいか」を返します。送らなくても、この結果はそのまま使えます。</p>
       <textarea id="resultText" readonly aria-label="LINE に送る結果の文"></textarea>
       <div class="row">
         <button class="btn small" id="copyBtn" type="button">結果をコピーする</button>
@@ -281,7 +373,10 @@ function show(id) {
 function renderQuestion() {
   const q = QUESTIONS[step];
   $("stepText").textContent = `質問 ${step + 1} / ${QUESTIONS.length}`;
-  $("barFill").style.width = `${(step / QUESTIONS.length) * 100}%`;
+  $("stepLeft").textContent = step === QUESTIONS.length - 1 ? "最後の質問です" : `あと ${QUESTIONS.length - step - 1} 問`;
+  $("qNum").textContent = `Q${step + 1}`;
+  const qc = $("qCard"); qc.style.animation = "none"; void qc.offsetWidth; qc.style.animation = "";
+  $("barFill").style.width = `${((step + 1) / QUESTIONS.length) * 100}%`;
   $("qTitle").textContent = q.title;
   $("qHelp").textContent = q.help || "";
   $("qHelp").hidden = !q.help;
@@ -327,7 +422,7 @@ function judge(a) {
   const now = [], next = [], far = [];
   JOBS.forEach(job => {
     const missing = job.req.filter(([ok]) => !ok(a)).map(([, add]) => add);
-    const item = { ...job, missing };
+    const item = { ...job, missing, total: job.req.length };
     if (missing.length === 0) now.push(item);
     else if (missing.length === 1) next.push(item);
     else far.push(item);
@@ -342,11 +437,17 @@ function jobHtml(job, mode) {
   const d = document.createElement("div");
   d.className = "job";
   const b = document.createElement("b"); b.textContent = job.name; d.append(b);
+  const mt = document.createElement("div"); mt.className = "meter";
+  const segs = document.createElement("div"); segs.className = "segs";
+  const met = job.total - job.missing.length;
+  for (let k = 0; k < job.total; k++) { const i = document.createElement("i"); if (k < met) i.className = "on"; segs.append(i); }
+  const em = document.createElement("em"); em.textContent = `条件 ${met} / ${job.total}`;
+  mt.append(segs, em); d.append(mt);
   const s = document.createElement("span"); s.textContent = job.desc; d.append(s);
   if (mode !== "now" && job.missing.length) {
     const s2 = document.createElement("span");
     s2.textContent = mode === "next" ? "足すもの：" : "まだ足りていないもの：";
-    s2.style.marginTop = "4px"; s2.style.color = "var(--ink)";
+    s2.style.marginTop = "6px"; s2.style.color = "var(--ink)"; s2.style.fontWeight = "700";
     d.append(s2);
     const ul = document.createElement("ul");
     job.missing.forEach(t => { const li = document.createElement("li"); li.textContent = t; ul.append(li); });
@@ -385,6 +486,7 @@ function showResult() {
   $("resultHead").textContent = head;
   $("resultLead").textContent = lead;
 
+  $("cNow").textContent = r.now.length; $("cNext").textContent = r.next.length; $("cFar").textContent = r.far.length;
   fill("tierNow", r.now, "now", "今の段階では、まだありません。");
   fill("tierNext", r.next, "next", "今の段階では、ありません。");
   fill("tierFar", r.far.slice(0, 4), "far", "ありません。");
