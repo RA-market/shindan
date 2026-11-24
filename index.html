@@ -114,6 +114,8 @@
   .note { font-size: 13px; color: var(--sub); border-top: 1px solid var(--line); padding-top: 14px; margin-top: 22px; line-height: 1.7; }
   .note li { margin-bottom: 4px; }
   .note ul { padding-left: 18px; margin: 0; }
+  .note details { margin-top: 2px; }
+  .note summary { cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
   textarea { width: 100%; min-height: 150px; border: 0; box-shadow: inset 0 0 0 1.5px var(--line); border-radius: 12px; padding: 12px; font-size: 13px;
     font-family: inherit; line-height: 1.65; color: var(--ink); background: #faf8f3; resize: vertical; }
   [hidden] { display: none !important; }
@@ -156,6 +158,8 @@
     <div class="note">
       <ul>
         <li>名前・連絡先・会社名は聞きません。答えた内容はこの画面の中だけで計算し、どこにも送りません。</li>
+        <li>ページの改善のために、開かれた回数や診断を終えた回数を数えています。
+          <details><summary>数えているもの</summary>このページが開かれた回数、診断がどこまで進んだか、結果の区分（届きそう・あと1つ・まだ遠い）、ボタンが押された回数、どこから来たかのラベル。回数の記録は Google フォームに送っています。答えた内容・名前・連絡先は送りません。Cookie も使いません。</details></li>
         <li>結果は、公開されている求人票によく書かれている条件をもとにした目安です。採用や内定を約束するものではありません。</li>
         <li>年収や点数の査定は行いません。</li>
       </ul>
@@ -207,11 +211,18 @@
       <p>結果を LINE のトークに送ってもらえれば、人が見て「次に何を足すとよいか」を返します。送らなくても、この結果はそのまま使えます。</p>
       <textarea id="resultText" readonly aria-label="LINE に送る結果の文"></textarea>
       <div class="row">
-        <button class="btn small" id="copyBtn" type="button">結果をコピーする</button>
-        <a class="btn small ghost" id="lineBtn" href="#" hidden>LINE で送る</a>
+        <a class="btn small" id="lineBtn" href="#" hidden>この結果を LINE で送る</a>
+        <button class="btn small ghost" id="copyBtn" type="button">結果をコピーする</button>
       </div>
       <p class="msg" id="copyMsg" role="status"></p>
-      <p class="sub" style="margin:0">会社名・顧客名・連絡先は書き足さないでください。</p>
+      <p class="sub" style="margin:0">返信まで時間がかかることがあります。会社名・顧客名・連絡先は書き足さないでください。</p>
+      <p class="sub" id="addWrap" style="margin:10px 0 0" hidden>いまは送らない人へ：<a id="addBtn" href="#">LINE で友だち追加だけしておく</a>と、あとから相談できます。</p>
+    </div>
+
+    <div class="card" id="meetingCard" hidden>
+      <h2>話して相談したい人へ</h2>
+      <p id="meetingText"></p>
+      <a class="btn small" id="meetingBtn" href="#">相談の日時を選ぶ</a>
     </div>
 
     <button class="btn ghost" id="retryBtn" type="button">もう一度やる</button>
@@ -220,6 +231,7 @@
       <ul>
         <li>この結果は、公開されている求人票によく書かれている条件をもとにした目安です。採用や内定を約束するものではありません。実際の条件は求人ごとに違います。</li>
         <li>答えた内容は、この画面の中だけで計算しています。「LINE で送る」「コピーする」を自分で押さない限り、どこにも送られません。</li>
+        <li>ページの改善のために、開かれた回数・診断を終えた回数・結果の区分・ボタンが押された回数を数えています（Google フォームに送信）。答えた内容・名前・連絡先は送りません。</li>
       </ul>
     </div>
   </section>
@@ -230,6 +242,48 @@
 /* ===== 設定 =====
    LINE_BASIC_ID: 公式アカウントのベーシックID（例 "@abc1234x"）。入れると「LINE で送る」ボタンが出る。空ならコピーだけ。 */
 const LINE_BASIC_ID = "@393jxxwx";
+
+/* MEETING_URL: 相談の予約ページ（先方が用意したもの）。空のあいだは「話して相談したい人へ」の枠を出さない。
+   MEETING_TEXT: その枠に出す説明文。相談の相手・時間・費用は、先方と確かめた文だけを入れる。 */
+const MEETING_URL = "";
+const MEETING_TEXT = "";
+
+/* ===== 回数の記録（個人を特定しない） =====
+   送るもの: できごとの名前 / どこから来たかのラベル / ページを開くたびに作る乱数 / 結果の区分。
+   送らないもの: 答えた内容、名前、連絡先。Cookie は使わない。
+   ?test=1 を付けて一度開くと、その端末からの記録はテストとして分けられる（?test=0 で戻す）。 */
+const TRACK_URL = "https://docs.google.com/forms/d/e/1FAIpQLSfIBU9QjyjfLQvm8dHK5sec1_okTYgSieXeJ2wvTDoewSwIuA/formResponse";
+const TRACK_FIELD = "entry.373792171";
+const SRC_ALLOWED = ["x_profile", "x_fixed", "x_post", "qiita_profile", "qiita_article", "tiktok_dopa", "tiktok_error", "tiktok_why", "line_menu", "line_greeting", "line_msg", "share"];
+const PARAMS = new URLSearchParams(location.search);
+const SRC = (() => {
+  const v = (PARAMS.get("src") || "").toLowerCase();
+  return v ? (SRC_ALLOWED.includes(v) ? v : "other") : "direct";
+})();
+let IS_TEST = /^(localhost|127\.0\.0\.1)$/.test(location.hostname) || location.protocol === "file:";
+try {
+  if (PARAMS.get("test") === "1") localStorage.setItem("shindan_test", "1");
+  if (PARAMS.get("test") === "0") localStorage.removeItem("shindan_test");
+  if (localStorage.getItem("shindan_test") === "1") IS_TEST = true;
+} catch (e) { if (PARAMS.get("test") === "1") IS_TEST = true; }
+const SID = "s" + Math.random().toString(36).slice(2, 10);
+const sentEvents = new Set();
+function track(name, detail) {
+  if (!TRACK_URL || sentEvents.has(name)) return;
+  if (navigator.webdriver || /bot|crawl|spider|preview|headless/i.test(navigator.userAgent)) return;
+  sentEvents.add(name);
+  const rec = ["v1", "ev", name, SRC, SID, detail || "", IS_TEST ? "t1" : "t0", "", "", "", "."].join("|");
+  try {
+    fetch(TRACK_URL, { method: "POST", mode: "no-cors", credentials: "omit", keepalive: true,
+      body: new URLSearchParams({ [TRACK_FIELD]: rec }) }).catch(() => {});
+  } catch (e) {}
+}
+function whenVisible(fn) {
+  if (document.visibilityState === "visible") fn();
+  else document.addEventListener("visibilitychange", function h() {
+    if (document.visibilityState === "visible") { document.removeEventListener("visibilitychange", h); fn(); }
+  });
+}
 
 /* ===== 質問 ===== */
 const QUESTIONS = [
@@ -523,14 +577,24 @@ function showResult() {
   if (LINE_BASIC_ID) {
     $("lineBtn").hidden = false;
     $("lineBtn").href = `https://line.me/R/oaMessage/${encodeURIComponent(LINE_BASIC_ID)}/?${encodeURIComponent($("resultText").value)}`;
+    // LINE のメニューから来た人は、もう友だちなので出さない
+    $("addWrap").hidden = SRC.startsWith("line_");
+    $("addBtn").href = `https://line.me/R/ti/p/${encodeURIComponent(LINE_BASIC_ID)}`;
   }
+  if (MEETING_URL && MEETING_TEXT) {
+    $("meetingCard").hidden = false;
+    $("meetingText").textContent = MEETING_TEXT;
+    $("meetingBtn").href = MEETING_URL;
+  }
+  track("diag_completed", r.now.length ? "reach" : (r.next.length ? "near" : "far"));
   $("copyMsg").textContent = "";
   show("result");
   $("resultHead").focus({ preventScroll: true });
 }
 
-$("startBtn").addEventListener("click", () => { step = 0; show("quiz"); renderQuestion(); });
+$("startBtn").addEventListener("click", () => { track("diag_started"); step = 0; show("quiz"); renderQuestion(); });
 $("nextBtn").addEventListener("click", () => {
+  track("q" + (step + 1));
   if (step < QUESTIONS.length - 1) { step++; renderQuestion(); window.scrollTo(0, 0); } else showResult();
 });
 $("backBtn").addEventListener("click", () => {
@@ -538,11 +602,23 @@ $("backBtn").addEventListener("click", () => {
 });
 $("retryBtn").addEventListener("click", () => { Object.keys(answers).forEach(k => delete answers[k]); show("intro"); });
 $("copyBtn").addEventListener("click", async () => {
+  track("result_copied");
   const t = $("resultText");
   try { await navigator.clipboard.writeText(t.value); }
   catch (e) { t.select(); document.execCommand("copy"); }
   $("copyMsg").textContent = "コピーしました。LINE のトークに貼り付けて送ってください。";
 });
+$("lineBtn").addEventListener("click", () => track("line_cta_click", "send"));
+$("addBtn").addEventListener("click", () => track("line_add_click"));
+$("meetingBtn").addEventListener("click", () => track("booking_click", "result"));
+
+// LINE の返信などから予約ページへ送るときの中継（?go=meeting）。押された回数を数えてから移る
+if (PARAMS.get("go") === "meeting" && MEETING_URL) {
+  track("booking_click", "relay");
+  setTimeout(() => location.replace(MEETING_URL), 350);
+} else {
+  whenVisible(() => track("lp_view"));
+}
 </script>
 </body>
 </html>
