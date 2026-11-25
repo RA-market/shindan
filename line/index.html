@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>公式LINE に移動します｜エンジニアの現在地チェック</title>
+<style>
+  :root { --bg: #f4f1ea; --card: #ffffff; --ink: #17212b; --sub: #5a6472; --line: #e3ddd0; --main: #17624f; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); line-height: 1.8;
+    font-family: "Hiragino Sans", "Yu Gothic UI", "Meiryo", system-ui, sans-serif; }
+  main { max-width: 520px; margin: 0 auto; padding: 56px 16px 40px; }
+  .card { background: var(--card); border-radius: 20px; padding: 28px 22px; box-shadow: 0 8px 24px rgba(23, 33, 43, .06); }
+  h1 { font-size: 20px; line-height: 1.5; margin: 0 0 8px; }
+  p { margin: 0 0 16px; }
+  .btn { display: block; width: 100%; padding: 16px; border-radius: 14px; background: var(--main); color: #fff;
+    font-weight: 700; font-size: 17px; text-align: center; text-decoration: none; }
+  .note { font-size: 13px; color: var(--sub); border-top: 1px solid var(--line); padding-top: 14px; margin: 22px 0 0; line-height: 1.7; }
+</style>
+</head>
+<body>
+<main>
+  <div class="card">
+    <h1>公式LINE「エンジニアの現在地チェック」に移動しています</h1>
+    <p>LINE の中で、転職診断と相談ができます。自動で開かないときは、下のボタンを押してください。</p>
+    <a class="btn" id="goBtn" href="https://line.me/R/ti/p/%40393jxxwx">LINE で開く</a>
+  </div>
+  <p class="note">このページは、リンクが押された回数だけを数えています（どこから来たかのラベルつき。記録は Google フォームに送っています）。名前や連絡先は送りません。Cookie も使いません。</p>
+</main>
+
+<script>
+/* プロフィールなどのリンクから、公式LINE の友だち追加へ送る中継ページ。
+   押された回数（entry_click）を数えてから LINE に移る。
+   ?src= で入口を区別する。?test=1 を付けて一度開くと、その端末からの記録はテストとして分けられる。 */
+const LINE_URL = "https://line.me/R/ti/p/%40393jxxwx";
+const TRACK_URL = "https://docs.google.com/forms/d/e/1FAIpQLSfIBU9QjyjfLQvm8dHK5sec1_okTYgSieXeJ2wvTDoewSwIuA/formResponse";
+const TRACK_FIELD = "entry.373792171";
+const SRC_ALLOWED = ["x_profile", "x_fixed", "x_post", "qiita_profile", "qiita_article", "tiktok_dopa", "tiktok_error", "tiktok_why", "line_menu", "line_greeting", "line_msg", "share"];
+const PARAMS = new URLSearchParams(location.search);
+const SRC = (() => {
+  const v = (PARAMS.get("src") || "").toLowerCase();
+  return v ? (SRC_ALLOWED.includes(v) ? v : "other") : "direct";
+})();
+let IS_TEST = /^(localhost|127\.0\.0\.1)$/.test(location.hostname) || location.protocol === "file:";
+try {
+  if (PARAMS.get("test") === "1") localStorage.setItem("shindan_test", "1");
+  if (PARAMS.get("test") === "0") localStorage.removeItem("shindan_test");
+  if (localStorage.getItem("shindan_test") === "1") IS_TEST = true;
+} catch (e) { if (PARAMS.get("test") === "1") IS_TEST = true; }
+const SID = "s" + Math.random().toString(36).slice(2, 10);
+const IS_BOT = navigator.webdriver || /bot|crawl|spider|preview|headless/i.test(navigator.userAgent);
+const sentEvents = new Set();
+function track(name, detail) {
+  if (!TRACK_URL || IS_BOT || sentEvents.has(name)) return;
+  sentEvents.add(name);
+  const rec = ["v1", "ev", name, SRC, SID, detail || "", IS_TEST ? "t1" : "t0", "", "", "", "."].join("|");
+  try {
+    fetch(TRACK_URL, { method: "POST", mode: "no-cors", credentials: "omit", keepalive: true,
+      body: new URLSearchParams({ [TRACK_FIELD]: rec }) }).catch(() => {});
+  } catch (e) {}
+}
+function whenVisible(fn) {
+  if (document.visibilityState === "visible") fn();
+  else document.addEventListener("visibilitychange", function h() {
+    if (document.visibilityState === "visible") { document.removeEventListener("visibilitychange", h); fn(); }
+  });
+}
+document.getElementById("goBtn").addEventListener("click", () => track("entry_button"));
+// ?stay=1 のときは自動で移らない（表示の確認用）
+if (!IS_BOT) whenVisible(() => {
+  track("entry_click");
+  if (PARAMS.get("stay") !== "1") setTimeout(() => location.replace(LINE_URL), 400);
+});
+</script>
+</body>
+</html>
