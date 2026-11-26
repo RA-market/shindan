@@ -110,6 +110,7 @@
   .meter em { font-style: normal; font-size: 12px; font-weight: 700; color: var(--sub); white-space: nowrap; }
   .none { font-size: 14px; color: var(--sub); margin: 6px 0 0; }
   .nextstep { background: #fff8e8; box-shadow: inset 0 0 0 2px #f2d08a; }
+  .fitcard { background: #eaf5f0; box-shadow: inset 0 0 0 2px #17624f; }
   .nextstep h2 { display: flex; align-items: center; gap: 8px; }
   .note { font-size: 13px; color: var(--sub); border-top: 1px solid var(--line); padding-top: 14px; margin-top: 22px; line-height: 1.7; }
   .note li { margin-bottom: 4px; }
@@ -142,7 +143,7 @@
           <text x="10" y="92">いま</text><text x="100" y="16">届きそう</text><text x="196" y="84">あと1つ</text><text x="262" y="46" opacity=".8">まだ遠い</text>
         </g>
       </svg>
-      <div class="meta"><span>8問</span><span>約3分</span><span>登録なし・無料</span></div>
+      <div class="meta"><span>10問</span><span>約3分</span><span>登録なし・無料</span></div>
     </div>
     <div class="cta-wrap"><button class="btn big" id="startBtn" type="button">診断を始める</button></div>
 
@@ -195,6 +196,12 @@
         <div><b id="cNext">0</b><span>あと1つ</span></div>
         <div><b id="cFar">0</b><span>まだ遠い</span></div>
       </div>
+    </div>
+
+    <div class="card fitcard" id="fitCard" hidden>
+      <h2>データ・AI の仕事への移り方を、相談できます</h2>
+      <p>今の経験は、データ・AI の仕事への入口に近い条件に当てはまっています。人材紹介会社のキャリアアドバイザーに、今の仕事からの移り方を相談できます。転職を決めていなくても大丈夫です。</p>
+      <p class="sub" style="margin:0">この下の「この結果を LINE で送る」から送ると、相談の希望として受け付けます。求人や内定を約束するものではありません。</p>
     </div>
 
     <div class="tier now"><h3>今の学習で届きそうな仕事</h3><div id="tierNow"></div></div>
@@ -340,6 +347,20 @@ const QUESTIONS = [
     ["2", "コードを書いてもらっている"],
     ["3", "書いてもらったコードを自分で説明でき、直せる"],
   ]},
+  { id: "career", title: "社会人として働いた年数は？", help: "アルバイトは含めません。今の会社でなくても、通算で数えてください。", multi: false, opts: [
+    ["0", "まだ働いていない・1年未満"],
+    ["1", "1〜3年"],
+    ["3", "3〜6年"],
+    ["6", "6年以上"],
+  ]},
+  { id: "datawork", title: "仕事や資格で、当てはまるものは？", help: "当てはまるものをすべて選んでください。", multi: true, opts: [
+    ["sql", "SQL を仕事で使っている"],
+    ["tableau", "Tableau を仕事で使っている"],
+    ["analysis", "データ分析を仕事でしている（集計・レポート作りを含む）"],
+    ["pyexam", "Python の検定・認定試験に合格している"],
+    ["stat2", "統計検定2級以上を持っている"],
+    ["nothing", "どれも当てはまらない"],
+  ]},
   { id: "goal", title: "目指したい仕事は？", multi: false, opts: [
     ["web", "Web の開発（画面やサーバー側を作る）"],
     ["infra", "インフラ・クラウド（サーバーやネットワーク）"],
@@ -472,6 +493,15 @@ function updateNext() {
   $("nextBtn").disabled = q.multi ? !(v && v.length) : !v;
 }
 
+/* データ・AI のキャリア相談につなぐ条件 (2026-11-25 の定例で ROYAL AGENT から受けた5要件)。
+   社会人経験1年以上6年未満、かつ SQL・Tableau・データ分析の実務、Python の検定、統計検定2級のどれか。
+   求人や内定を約束するものではない。相談の案内を出すかどうかだけに使う */
+function dataFit(a) {
+  const years = a.career === "1" || a.career === "3";
+  const any = (a.datawork || []).some(v => v !== "nothing");
+  return years && any;
+}
+
 function judge(a) {
   const now = [], next = [], far = [];
   JOBS.forEach(job => {
@@ -572,7 +602,9 @@ function showResult() {
 届きそう：${names(r.now)}
 あと1つ：${names(r.next)}
 
-くわしく見てほしいです。`;
+社会人経験：${label("career")}
+仕事・資格：${label("datawork")}
+${dataFit(a) ? "データ・AI のキャリア相談を希望します。" : "くわしく見てほしいです。"}`;
 
   if (LINE_BASIC_ID) {
     $("lineBtn").hidden = false;
@@ -587,6 +619,9 @@ function showResult() {
     $("meetingBtn").href = MEETING_URL;
   }
   track("diag_completed", r.now.length ? "reach" : (r.next.length ? "near" : "far"));
+  const fit = dataFit(a);
+  $("fitCard").hidden = !fit;
+  track("data_fit", fit ? "yes" : "no");
   $("copyMsg").textContent = "";
   show("result");
   $("resultHead").focus({ preventScroll: true });
