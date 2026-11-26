@@ -33,7 +33,16 @@
 /* プロフィールなどのリンクから、公式LINE の友だち追加へ送る中継ページ。
    押された回数（entry_click）を数えてから LINE に移る。
    ?src= で入口を区別する。?test=1 を付けて一度開くと、その端末からの記録はテストとして分けられる。 */
-const LINE_URL = "https://line.me/R/ti/p/%40393jxxwx";
+const LINE_URL_DEFAULT = "https://line.me/R/ti/p/%40393jxxwx";
+/* 入口ごとの LINE 友だち追加経路 (2026-11-26 に LINE 管理画面の「友だち追加経路」で発行)。
+   LINE の分析 > 友だち > 追加経路 で、入口ごとの友だち追加が見られる (20人未満は非表示)。
+   作った経路は LINE 側で編集・削除できない。新しい入口を足すときは、LINE で経路を作ってからここに足す */
+const LINE_URL_BY_SRC = {
+  x_profile: "https://lin.ee/6m9jzvA",      // 経路 X / @nagara_en プロフィール
+  qiita_profile: "https://lin.ee/WVDKibU",  // 経路 Qiita / @dopa_en プロフィール
+  tiktok_error: "https://lin.ee/StVHxjI",   // 経路 TikTok / @error_daisuki プロフィール
+  tiktok_dopa: "https://lin.ee/nvXRMpw",    // 経路 TikTok / @dopadopa_ プロフィール
+};
 const TRACK_URL = "https://docs.google.com/forms/d/e/1FAIpQLSfIBU9QjyjfLQvm8dHK5sec1_okTYgSieXeJ2wvTDoewSwIuA/formResponse";
 const TRACK_FIELD = "entry.373792171";
 const SRC_ALLOWED = ["x_profile", "x_fixed", "x_post", "qiita_profile", "qiita_article", "tiktok_dopa", "tiktok_error", "tiktok_why", "line_menu", "line_greeting", "line_msg", "share"];
@@ -48,6 +57,7 @@ try {
   if (PARAMS.get("test") === "0") localStorage.removeItem("shindan_test");
   if (localStorage.getItem("shindan_test") === "1") IS_TEST = true;
 } catch (e) { if (PARAMS.get("test") === "1") IS_TEST = true; }
+const LINE_URL = LINE_URL_BY_SRC[SRC] || LINE_URL_DEFAULT;
 const SID = "s" + Math.random().toString(36).slice(2, 10);
 const IS_BOT = navigator.webdriver || /bot|crawl|spider|preview|headless/i.test(navigator.userAgent);
 const sentEvents = new Set();
@@ -66,6 +76,7 @@ function whenVisible(fn) {
     if (document.visibilityState === "visible") { document.removeEventListener("visibilitychange", h); fn(); }
   });
 }
+document.getElementById("goBtn").href = LINE_URL;
 document.getElementById("goBtn").addEventListener("click", () => track("entry_button"));
 // ?stay=1 のときは自動で移らない（表示の確認用）
 if (!IS_BOT) whenVisible(() => {
